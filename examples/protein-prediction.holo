@@ -1,0 +1,152 @@
+/**
+ * AlphaFold Protein Structure Prediction Example
+ * Generate novel protein structures from amino acid sequences in VR
+ *
+ * Features:
+ * - @alphafold_predict trait for structure prediction
+ * - @structure_confidence trait for pLDDT coloring
+ * - @multimer_predict for protein complexes
+ * - @pae_visualization for predicted error heatmaps
+ */
+
+scene "Protein Engineering Lab" {
+  background: "#0a0a1a";
+  lighting: "scientific";
+  camera_position: [0, 2, 10];
+}
+
+// Example 1: Single protein prediction
+object "Novel Enzyme" @alphafold_predict @structure_confidence {
+  sequence: "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKAVQVKVK",
+  job_name: "novel_enzyme_v1",
+  position: [-5, 1, -3];
+  scale: [2, 2, 2];
+
+  // Prediction settings
+  mode: "api",              // Use AlphaFold3 API
+  num_models: 5,            // Generate 5 models
+  use_templates: false,     // De novo prediction
+
+  // Visualization
+  color_by: "confidence",   // pLDDT coloring (blue=high, red=low)
+  show_confidence_threshold: 70,  // Only show residues with pLDDT ≥70
+  confidence_legend: true,  // Show color legend
+}
+
+// Example 2: Protein complex (multimer)
+object "Antibody-Antigen Complex" @multimer_predict @structure_confidence {
+  // Heavy chain + Light chain + Antigen
+  sequences: [
+    "QVQLVQSGAEVKKPGASVKVSCKASGYTFTSYYMHWVRQAPGQGLEWMGI",  // Heavy chain
+    "DIQMTQSPSSLSASVGDRVTITCRASQSISSYLNWYQQKPGKAPKLLIYA",  // Light chain
+    "MKFLKFSLLTAVLLSVVFAFSSCGDDDDTGYLPPSQAIQDLMKQ",        // Antigen
+  ],
+  stoichiometry: [1, 1, 1],  // 1 copy of each chain
+  job_name: "antibody_antigen_complex",
+  position: [5, 1, -3];
+  scale: [2, 2, 2];
+
+  // Visualization
+  color_by_chain: true,     // Different color per chain
+  chain_colors: ["#FF5555", "#55FF55", "#5555FF"],  // Heavy, Light, Antigen
+  show_interfaces: true,    // Highlight binding interfaces
+}
+
+// Example 3: Confidence score analysis
+object "Structure Quality Check" @alphafold_predict @structure_confidence @pae_visualization {
+  sequence: "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKAVQVKVK",
+  position: [0, 1, -8];
+  scale: [3, 3, 3];
+
+  // Prediction
+  mode: "api",
+  num_models: 1,
+
+  // Confidence visualization
+  plddt_histogram: true,     // Show distribution of confidence scores
+  plddt_threshold_bands: [
+    { min: 90, max: 100, label: "Very High (>90)", color: "#0066FF" },
+    { min: 70, max: 90, label: "High (70-90)", color: "#66B2FF" },
+    { min: 50, max: 70, label: "Low (50-70)", color: "#FFB266" },
+    { min: 0, max: 50, label: "Very Low (<50)", color: "#FF6666" },
+  ],
+
+  // PAE (Predicted Aligned Error) heatmap
+  pae_heatmap: {
+    enabled: true,
+    position: [-2, 3, 0],     // Floating heatmap above structure
+    size: [4, 4],              // 4m x 4m heatmap
+    color_scale: "blue_to_red",  // Blue=low error, Red=high error
+    interactive: true,         // Click to highlight residue pairs
+  },
+}
+
+// Example 4: Iterative design workflow
+object "Protein Design Iterations" @alphafold_predict {
+  // Design multiple variants and compare
+  variants: [
+    {
+      name: "Variant A",
+      sequence: "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKAVQVKVK",
+      position: [-6, 1, -5],
+    },
+    {
+      name: "Variant B (mutated)",
+      sequence: "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLRGAEKAVQVKVK",  // L→R mutation
+      position: [-2, 1, -5],
+    },
+    {
+      name: "Variant C (deletion)",
+      sequence: "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKA",
+      position: [2, 1, -5],
+    },
+    {
+      name: "Variant D (insertion)",
+      sequence: "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKAVQVKVKGGGG",  // +GGGG linker
+      position: [6, 1, -5],
+    },
+  ],
+
+  // Batch prediction
+  predict_all: true,
+  mode: "api",
+  num_models: 3,              // 3 models per variant
+
+  // Comparison
+  rmsd_comparison: true,      // Calculate RMSD between variants
+  confidence_comparison: true, // Compare mean pLDDT scores
+  best_variant_highlight: true, // Highlight variant with best confidence
+}
+
+// Example 5: Real-time folding animation
+object "Folding Simulation" @alphafold_predict {
+  sequence: "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKAVQVKVK",
+  position: [0, 1, -12];
+  scale: [4, 4, 4];
+
+  // Prediction
+  mode: "api",
+  num_models: 1,
+
+  // Animation
+  animate_folding: true,      // Animate from extended to folded state
+  folding_duration: 10,       // 10 seconds
+  folding_style: "smooth",    // Smooth interpolation
+  show_energy_landscape: true, // Show energy minimization progress
+}
+
+// Example 6: Template-based prediction
+object "Homology Modeling" @alphafold_predict {
+  sequence: "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKAVQVKVK",
+  position: [0, 1, -15];
+
+  // Use known structures as templates
+  mode: "api",
+  use_templates: true,
+  template_structures: ["pdb:1ABC", "pdb:2XYZ"],  // Similar protein structures
+  template_cutoff_date: "2024-01-01",  // Only use templates before this date
+
+  // Visualization
+  show_template_alignment: true,  // Show alignment to templates
+  highlight_template_regions: true, // Highlight regions matching templates
+}

@@ -1,0 +1,69 @@
+{
+  "name": "@holoscript/alphafold-plugin",
+  "version": "1.0.0",
+  "description": "AlphaFold protein structure prediction for HoloScript - Generate novel proteins in VR",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest --config jest.config.js",
+    "test:integration": "jest --config jest.config.js --testPathPattern=integration",
+    "test:coverage": "jest --coverage",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+  },
+  "keywords": [
+    "holoscript",
+    "plugin",
+    "alphafold",
+    "protein-prediction",
+    "ai",
+    "ml",
+    "vr",
+    "ar",
+    "xr",
+    "spatial-computing",
+    "drug-discovery",
+    "bioinformatics"
+  ],
+  "author": "HoloScript Contributors",
+  "license": "MIT",
+  "peerDependencies": {
+    "holoscript": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.2.4",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {},
+  "python": {
+    "requirements": [
+      "requests>=2.31.0",
+      "# Optional: colabfold>=1.5.0 (for local prediction)",
+      "# AlphaFold3 API via web requests (no local install needed)"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/holoscript/holoscript-alphafold-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/holoscript/holoscript-alphafold-plugin/issues"
+  },
+  "homepage": "https://github.com/holoscript/holoscript-alphafold-plugin#readme"
+}
